@@ -86,7 +86,7 @@ const program = async (g2gMailAddress, g2gPassword, firefoxWebdriverPath) => {
             await driver.sleep(1000 * 3)
 
             await clickButton(By.xpath("//a[contains(text(),'View Delivery Details')]"))
-            await driver.sleep(1000) 
+            await driver.sleep(1000)
 
             await clickButton(By.xpath("//a[contains(text(),'Start Trading')]"))
             await driver.sleep(1000)
@@ -113,7 +113,7 @@ const program = async (g2gMailAddress, g2gPassword, firefoxWebdriverPath) => {
             await driver.sleep(1000 * 3)
             schedulePerformFulfillOrder()
         } catch (err) {
-            await driver.sleep(1000 * 60 * 2) 
+            await driver.sleep(1000 * 60 * 2)
             schedulePerformFulfillOrder()
         }
     }
