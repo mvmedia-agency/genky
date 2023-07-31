@@ -8,8 +8,7 @@ require("dotenv").config()
 const program = async (g2gMailAddress, g2gPassword, firefoxWebdriverPath, firefoxBinaryPath) => {
     const options = new firefox.Options()
         .setBinary(firefoxBinaryPath)
-        .headless()
-        .windowSize(1920, 1080);
+        .headless();
 
     const firefoxService = new firefox.ServiceBuilder(firefoxWebdriverPath);
 
