@@ -72,14 +72,14 @@ const program = async (g2gMailAddress: string, g2gPassword: string, firefoxWebdr
     }
 
     const extractText = async (locator: By) => {
-        await driver.wait(until.elementsLocated(locator), 10000)
+        await driver.wait(until.elementsLocated(locator), 1000 * 60)
         const element = await driver.findElement(locator);
 
         return element.getText();
     }
 
     const fillInput = async (by: By, value: string) => {
-        await driver.wait(until.elementLocated(by), 10000);
+        await driver.wait(until.elementLocated(by), 1000 * 60);
         const input = await driver.findElement(by);
         input.sendKeys(value);
         return input
