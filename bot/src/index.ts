@@ -2,12 +2,40 @@ import { By, Builder, until, Key } from "selenium-webdriver";
 import firefox from "selenium-webdriver/firefox";
 import readline from "readline-sync";
 import config from "./config";
+import fs from "fs";
 
 require("dotenv").config()
 
-const program = async (g2gMailAddress: string, g2gPassword: string, firefoxWebdriverPath: string, firefoxBinaryPath: string) => {
-    config;
+function getCurrentTime() {
+    const currentDateTime = new Date();
 
+    const hours = String(currentDateTime.getHours()).padStart(2, "0");
+    const minutes = String(currentDateTime.getMinutes()).padStart(2, "0");
+    const seconds = String(currentDateTime.getSeconds()).padStart(2, "0");
+    const millis = String(currentDateTime.getMilliseconds()).padStart(2, "0");
+
+    return `${hours}:${minutes}:${seconds}:${millis}`;
+}
+
+const _log = console.log;
+
+function logToFile(data: string): string {
+    const filePath = "log.txt";
+    const msg = `[${getCurrentTime()}] ${data}`;
+    fs.appendFileSync(filePath, msg + "\n");
+
+    return msg;
+}
+
+function logToFileAndStdout(data: string) {
+    _log(logToFile(data));
+}
+
+console.log = (message: string) => {
+    logToFileAndStdout(message);
+}
+
+const program = async (g2gMailAddress: string, g2gPassword: string, firefoxWebdriverPath: string, firefoxBinaryPath: string) => {
     const options = new firefox.Options()
         .setBinary(firefoxBinaryPath)
         .headless();
@@ -31,7 +59,6 @@ const program = async (g2gMailAddress: string, g2gPassword: string, firefoxWebdr
     const waitForElement = async (locator: By) => {
         console.log("[$] Waiting for Order")
         for(let i = 0; i < 10; i++) {
-
             try {
                 await driver.wait(until.elementsLocated(locator), 10000);
                 const element = await driver.findElement(locator)
@@ -97,7 +124,7 @@ const program = async (g2gMailAddress: string, g2gPassword: string, firefoxWebdr
             const accountId = (await extractText(startCompletionElementXpath))
                 .split("#")[1]
 
-            console.log("found $$$")
+            console.log("found $$$");
 
             await clickButton(startCompletionElementXpath)
 
@@ -110,10 +137,20 @@ const program = async (g2gMailAddress: string, g2gPassword: string, firefoxWebdr
             await clickButton(By.xpath("//a[contains(text(),'View Delivery Details')]"))
             await driver.sleep(1000)
 
+            console.log(":: clicked on view delivery details");
+
             await clickButton(By.xpath("//a[contains(text(),'Start Trading')]"))
             await driver.sleep(1000)
 
+            console.log(":: clicked on start trading");
+
             const accountData = config[accountId]
+
+            console.log(`:: username -> ${accountData.username}`);
+            console.log(`:: password -> ${accountData.password}`);
+            console.log(`:: emailPassword -> ${accountData.emailPassword}`);
+            console.log(`:: email -> ${accountData.email}`);
+            console.log(`:: additional -> ${accountData.additional}`);
 
             await fillInput(By.xpath('//*[@id="account_id"]'), accountData.username)
             await fillInput(By.xpath('//*[@id="password"]'), accountData.password)
@@ -132,10 +169,12 @@ const program = async (g2gMailAddress: string, g2gPassword: string, firefoxWebdr
 
             await clickButton(By.xpath("//button[contains(text(),'Submit')]"));
 
+            console.log(":: clicked submit button");
+            console.log(":: done with this shit");
+
             await driver.sleep(1000 * 3)
             performCompleteSellOrder()
         } catch (err) {
-            console.log("FOLLOWING ERROR CAN BE IGNORE MOST OF THE TIMES");
             console.log(err);
             await driver.sleep(10000)
             performCompleteSellOrder()
@@ -166,10 +205,6 @@ const g2gMailAddress = requireEnv("G2G_EMAIL");
 const g2gPassword = requireEnv("G2G_PASSWORD");
 const firefoxWebdriverPath = requireEnv("FIREFOX_WEBDRIVER_PATH");
 const firefoxBinaryPath = requireEnv("FIREFOX_BINARY_PATH");
-
-console.log(process.env)
-console.log("=================")
-console.log(firefoxWebdriverPath)
 
 program(g2gMailAddress, g2gPassword, firefoxWebdriverPath, firefoxBinaryPath);
 
