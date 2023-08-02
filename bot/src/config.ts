@@ -1,4 +1,16 @@
-module.exports = {
+import { z } from "zod"
+
+export const configValidator = z.record(z.object({
+    username: z.string(),
+    password: z.string(),
+    email: z.string(),
+    emailPassword: z.string(),
+    additional: z.string()
+}));
+
+export type AccountConfig = z.infer<typeof configValidator>;
+
+const config: AccountConfig = {
     "1337": {
         username: "meikel",
         password: "meikelspassword",
@@ -15,3 +27,4 @@ module.exports = {
     }
 }
 
+export default configValidator.parse(config);

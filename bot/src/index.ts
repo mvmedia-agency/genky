@@ -1,11 +1,13 @@
-const { Builder, By, until, Key } = require("selenium-webdriver");
-const firefox = require("selenium-webdriver/firefox");
-const readline = require('readline-sync');
-const config = require("./config.js");
+import { By, Builder, until, Key } from "selenium-webdriver";
+import firefox from "selenium-webdriver/firefox";
+import readline from "readline-sync";
+import config from "./config";
 
 require("dotenv").config()
 
-const program = async (g2gMailAddress, g2gPassword, firefoxWebdriverPath, firefoxBinaryPath) => {
+const program = async (g2gMailAddress: string, g2gPassword: string, firefoxWebdriverPath: string, firefoxBinaryPath: string) => {
+    config;
+
     const options = new firefox.Options()
         .setBinary(firefoxBinaryPath)
         .headless();
@@ -20,13 +22,13 @@ const program = async (g2gMailAddress, g2gPassword, firefoxWebdriverPath, firefo
 
     console.log("[!] successfully started firefox");
 
-    const clickButton = async (locator) => {
+    const clickButton = async (locator: By) => {
         await driver.wait(until.elementsLocated(locator), 10000);
         const button = await driver.findElement(locator);
         button.click();
     }
 
-    const waitForElement = async (locator) => {
+    const waitForElement = async (locator: By) => {
         console.log("[$] Waiting for Order")
         for(let i = 0; i < 10; i++) {
 
@@ -36,21 +38,20 @@ const program = async (g2gMailAddress, g2gPassword, firefoxWebdriverPath, firefo
                 return element
             } catch (err) {
                 await driver.sleep(1000)
-            //    console.log(err)
                 continue
             }
         }
         throw new Error("elementNotFound");
     }
 
-    const extractText = async (locator) => {
-        await driver.wait(until.elementsLocated(locator, 10000))
+    const extractText = async (locator: By) => {
+        await driver.wait(until.elementsLocated(locator), 10000)
         const element = await driver.findElement(locator);
 
         return element.getText();
     }
 
-    const fillInput = async (by, value) => {
+    const fillInput = async (by: By, value: string) => {
         await driver.wait(until.elementLocated(by), 10000);
         const input = await driver.findElement(by);
         input.sendKeys(value);
@@ -134,6 +135,8 @@ const program = async (g2gMailAddress, g2gPassword, firefoxWebdriverPath, firefo
             await driver.sleep(1000 * 3)
             performCompleteSellOrder()
         } catch (err) {
+            console.log("FOLLOWING ERROR CAN BE IGNORE MOST OF THE TIMES");
+            console.log(err);
             await driver.sleep(10000)
             performCompleteSellOrder()
         }
@@ -150,7 +153,7 @@ const program = async (g2gMailAddress, g2gPassword, firefoxWebdriverPath, firefo
     await run();
 }
 
-const requireEnv = (name) => {
+const requireEnv = (name: string) => {
     const value = process.env[name]
     if (!value) {
         console.log(`You need to specifiy ${name} as environment variable`)
